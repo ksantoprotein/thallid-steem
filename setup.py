@@ -11,7 +11,7 @@ except LookupError:
 
 with open('README.md', 'r', encoding = 'utf8') as fh:
 	long_description = fh.read()
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 
 setuptools.setup(
 	name = 'tsteembase',
@@ -22,7 +22,8 @@ setuptools.setup(
 	#long_description = long_description,
 	long_description_content_type = 'text/markdown',
 	url = 'https://github.com/ksantoprotein/thallid-steem',
-	packages = ['tsteembase'],
+	#packages = setuptools.find_packages(),['tvizbase']
+	packages = ['tvizbase'],
 	
 	#download_url='https://github.com/bitfag/golos-piston/tarball/' + VERSION,
 	classifiers=[

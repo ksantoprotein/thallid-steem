@@ -70,54 +70,6 @@ class Api():
 			return False
 	
 		
-	def sm_token_transfer(self, to, amount, from_account, wif, asset = 'DEC'):
-
-		ops = []
-		json_body = {
-						"to": to,
-						"qty": str(amount),
-						"token": asset,
-						"type": 'withdraw',
-						"app": self.app,
-					}
-	
-		op = {
-			"required_auths": [],
-			"required_posting_auths": [from_account],
-			"id": 'sm_token_transfer',
-			"json": json.dumps(json_body)
-			}
-		ops.append(['custom_json', op])
-
-		tx = self.finalizeOp(ops, wif)
-		return tx
-
-
-	def ssc_token_transfer(self, to, amount, from_account, wif, asset = 'DEC', memo = ''):
-	
-		ops = []
-		json_body = {
-						"contractName": 'tokens',
-						"contractAction": 'transfer',
-						"contractPayload": {
-											"to": to,
-											"quantity": str(amount),
-											"symbol": asset,
-											"memo": memo,
-											"app": self.app,
-											}
-					}
-	
-		op = {
-			"required_auths": [from_account],		#видимо потребуется активный ключ (((
-			"required_posting_auths": [],
-			"id": 'ssc-mainnet1',
-			"json": json.dumps(json_body)
-			}
-		ops.append(['custom_json', op])
-
-		tx = self.finalizeOp(ops, wif)
-		return tx
 
 
 	def check_login(self, login):
@@ -1056,6 +1008,124 @@ class Api():
 	
 		
 	'''	
+	
+	
+##### ##### SteemMonsters ##### #####
+	
+class SteemMonsters(Api):
+
+	app = 'thallid'
+
+	def __init__(self, **kwargs):
+
+		# Пользуемся своими нодами или новыми
+		nodes = kwargs.pop("nodes", None)
+		report = kwargs.pop("report", False)
+		if nodes:
+			self.rpc = RpcClient(nodes = nodes, report = report)
+		else:
+			self.rpc = RpcClient(report = report)
+
+
+		self.broadcast = Tx(self.rpc)
+		self.finalizeOp = self.broadcast.finalizeOp
+		self.key = Key()	
+		
+		
+	def sm_token_transfer(self, to, amount, from_account, wif, asset = 'DEC', active = False):
+	
+		sign_active = [from_account] if active else []
+		sign_posting = [] if active else [from_account]
+
+		ops = []
+		json_body = {
+						"to": to,
+						"qty": str(amount),
+						"token": asset,
+						"type": 'withdraw',
+						"app": self.app,
+					}
+	
+		op = {
+			"required_auths": sign_active,
+			"required_posting_auths": sign_posting,
+			"id": 'sm_token_transfer',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+
+		
+	def sm_claim_reward(self, id, login, wif):
+	
+		ops = []
+		json_body = {
+						"type": 'quest',
+						"quest_id": id,
+						"app": self.app,
+					}
+	
+		op = {
+			"required_auths": [],
+			"required_posting_auths": [login],
+			"id": 'sm_claim_reward',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+		
+	
+	def sm_refresh_quest(self, login, wif):
+	
+		ops = []
+		json_body = {
+						"type": 'daily',
+						"app": self.app,
+					}
+	
+		op = {
+			"required_auths": [],
+			"required_posting_auths": [login],
+			"id": 'sm_refresh_quest',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+	
+
+	def ssc_token_transfer(self, to, amount, from_account, wif, asset = 'DEC', memo = ''):
+	
+		ops = []
+		json_body = {
+						"contractName": 'tokens',
+						"contractAction": 'transfer',
+						"contractPayload": {
+											"to": to,
+											"quantity": str(amount),
+											"symbol": asset,
+											"memo": memo,
+											"app": self.app,
+											}
+					}
+	
+		op = {
+			"required_auths": [from_account],		#видимо потребуется активный ключ (((
+			"required_posting_auths": [],
+			"id": 'ssc-mainnet1',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+
+		
 #----- common def -----
 def resolve_url(url):
 
