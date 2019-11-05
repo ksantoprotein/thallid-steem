@@ -68,8 +68,6 @@ class Api():
 		else:
 			#pprint(res)
 			return False
-	
-		
 
 
 	def check_login(self, login):
@@ -95,6 +93,16 @@ class Api():
 			return(public_key)
 			
 		return False
+		
+		
+	def is_posting_key(self, login, public_key):
+		account = self.rpc.call('get_accounts', [login])
+		if account:
+			keys = [key for key, auth in account[0]["posting"]["key_auths"]]
+			if public_key in keys:
+				return True
+		return False
+
 		
 		
 #############################	
