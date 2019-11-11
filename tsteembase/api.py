@@ -1066,6 +1066,28 @@ class SteemMonsters(Api):
 		return tx
 
 		
+	def sm_gift_cards(self, to, cards, login, wif):
+	
+		ops = []
+		json_body = {
+						"to": to,
+						"cards": cards,
+						"app": self.app,
+					}
+	
+		op = {
+			"required_auths": [],
+			"required_posting_auths": [login],
+			"id": 'sm_gift_cards',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+	
+
+		
 	def sm_claim_reward(self, id, login, wif):
 	
 		ops = []
@@ -1087,6 +1109,26 @@ class SteemMonsters(Api):
 		return tx
 		
 	
+	def sm_start_quest(self, login, wif):
+	
+		ops = []
+		json_body = {
+						"type": 'daily',
+						"app": self.app,
+					}
+	
+		op = {
+			"required_auths": [],
+			"required_posting_auths": [login],
+			"id": 'sm_start_quest',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+	
+
 	def sm_refresh_quest(self, login, wif):
 	
 		ops = []
