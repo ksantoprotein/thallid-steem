@@ -3,6 +3,7 @@
 from pprint import pprint
 import json
 import math
+import hashlib
 
 from .rpc_client import RpcClient
 from .broadcast import Tx
@@ -1066,6 +1067,55 @@ class SteemMonsters(Api):
 		return tx
 
 		
+	def sm_find_match(self, login, wif):
+	
+		ops = []
+		json_body = {
+						"match_type": 'Ranked',
+						"app": self.app,
+					}
+	
+		op = {
+			"required_auths": [],
+			"required_posting_auths": [login],
+			"id": 'sm_find_match',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+
+		
+	def sm_submit_team(self, combo, id, login, wif):
+	
+		m = hashlib.md5()
+		secret = '12345'
+		m.update((','.join(combo + [secret])).encode("utf-8"))
+		team_hash = m.hexdigest()
+		
+		ops = []
+		json_body = {
+						"summoner": combo[0],
+						"monsters": combo[1:],
+						"trx_id": id,
+						"app": self.app,
+						"secret": secret,
+						"team_hash": team_hash,
+					}
+	
+		op = {
+			"required_auths": [],
+			"required_posting_auths": [login],
+			"id": 'sm_submit_team',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+		
+		
 	def sm_gift_cards(self, to, cards, login, wif):
 	
 		ops = []
@@ -1085,7 +1135,6 @@ class SteemMonsters(Api):
 
 		tx = self.finalizeOp(ops, wif)
 		return tx
-	
 
 		
 	def sm_claim_reward(self, id, login, wif):
@@ -1094,6 +1143,27 @@ class SteemMonsters(Api):
 		json_body = {
 						"type": 'quest',
 						"quest_id": id,
+						"app": self.app,
+					}
+	
+		op = {
+			"required_auths": [],
+			"required_posting_auths": [login],
+			"id": 'sm_claim_reward',
+			"json": json.dumps(json_body)
+			}
+		ops.append(['custom_json', op])
+
+		tx = self.finalizeOp(ops, wif)
+		return tx
+		
+	
+	def sm_claim_reward_season(self, id, login, wif):
+	
+		ops = []
+		json_body = {
+						"type": 'league_season',
+						"season": id,
 						"app": self.app,
 					}
 	

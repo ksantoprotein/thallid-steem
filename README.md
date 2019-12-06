@@ -36,12 +36,42 @@ b4 = Api()
 
 b4.get_key_references(public_key)
 
-b4.sm_token_transfer(to, amount, from_account, wif, asset = 'DEC')				#posting key
-
-b4.ssc_token_transfer(to, amount, from_account, wif, asset = 'DEC', memo = '')	#active key
 
 check_login(login)
 is_login(login)
+
+```
+
+#### SteemMonsters
+``` python
+from tsteembase.api import SteemMonsters
+
+sm = SteemMonsters()
+
+# Tokens
+
+sm.ssc_token_transfer(to, amount, from_account, wif, memo = '')
+sm.sm_token_transfer(to, amount, from_account, wif)
+
+# Battle
+
+tx = sm.sm_find_match(login, wif)
+id = tx["id"]
+
+combo = [summoner, monsters]
+sm.sm_submit_team(combo, id, login, wif)
+
+# Cards
+
+cards = [cards_ids]
+sm.sm_gift_cards(to, cards, login, wif)
+
+# Reward
+
+sm.sm_claim_reward(id, login, wif)
+sm.sm_claim_reward_season(id, login, wif)
+sm.sm_start_quest(login, wif)
+sm.sm_refresh_quest(login, wif)
 
 ```
 
